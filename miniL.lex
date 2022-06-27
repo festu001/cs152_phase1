@@ -59,17 +59,20 @@ ALPHA_UNDER    [0-9a-zA-Z_]
       }
    }
    if (reservedFound == 0)
-      printf("%s\n", yytext);
+      printf("IDENT %s\n", yytext);
+
    currPos += yyleng;
 
 }
 
+
 ({DIGIT}+{ALPHA_UNDER}{ALPHANUMERIC}*)|("_"{ALPHA_UNDER}]+) {/* Checking for valid identifiers */ printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currPos, currLine, yytext); exit(0);}
 {LETTER}({ALPHA_UNDER}*{ALPHANUMERIC}+)?"_"                 {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currPos, currLine, yytext); exit(0);}
-{ALPHA_UNDER}*{ALPHANUMERIC}*                               {/* Valid identifier */ printf("IDENT %s\n", yytext); currPos += yyleng;}
+
 
 [ \t]+         {/* Ignoring whitespace */ currPos += yyleng;}
 "\n"           {currLine++; currPos = 1;}
+[##].*         {currLine++; currPos = 1;}
 .              {/* Error message for unrecognized symbol */ printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 %%
 	
