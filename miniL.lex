@@ -11,9 +11,14 @@
     "END_LOCALS","BEGIN_BODY", "END_BODY", "INTEGER", "ARRAY", "ENUM", "OF", "IF", "THEN", "ENDIF",
     "ELSE", "FOR", "WHILE", "DO", "BEGINLOOP", "ENDLOOP", "CONTINUE", "READ", 
     "WRITE", "AND", "OR", "NOT", "TRUE", "FALSE", "RETURN"};
+
+    const int numReserved = sizeof(reservedWord) / sizeof(reservedWord[0]);
 %}
 
 DIGIT    [0-9]
+LETTER [a-zA-Z]
+CHAR [0-9a-zA-Z_]
+CHAR_UNDERSCORE [0-9a-zA-Z]
 
 %%
 "-"            {/* ARITHMETIC OPERATORS START HERE */ printf("SUB\n"); currPos += yyleng;} 
@@ -39,6 +44,23 @@ DIGIT    [0-9]
 ">="            {printf("GTE\n"); currPos += yyleng;}
 
 {DIGIT}+       {printf("NUMBER %s\n", yytext); currPos += yyleng;}
+
+{LETTER}({CHAR}*{CHAR_UNDERSCORE}+)?    {
+   short reservedFound = 0;
+   int i;
+   for (i = 0; i < numReserved; i++)
+   {
+      if (strcmp(yytext, reservedWord[i]) == 0)
+      {
+         reservedFound = 1;
+         printf("%s\n", reservedWordMap[i]);
+      }
+   }
+   if (reservedFound == 0)
+      printf("%s\n", yytext);
+   currPos += yyleng;
+
+}
 
 [ \t]+         {/* Ignore spaces */ currPos += yyleng;}
 "\n"           {/* Handle newlines, currently is not recognizing newlines though. */ currLine++; currPos = 1;}
