@@ -13,7 +13,12 @@
     "WRITE", "AND", "OR", "NOT", "TRUE", "FALSE", "RETURN"};
 %}
 
-DIGIT    [0-9]
+DIGIT          [0-9]
+LETTER         [a-zA-Z]
+ALPHANUMERIC   [0-9a-zA-Z]
+DIGIT_UNDER    [0-9_]
+LETTER_UNDER   [a-zA-Z_]
+ALPHA_UNDER    [0-9a-zA-Z_]
 
 %%
 "-"            {/* ARITHMETIC OPERATORS START HERE */ printf("SUB\n"); currPos += yyleng;} 
@@ -40,11 +45,13 @@ DIGIT    [0-9]
 
 {DIGIT}+       {printf("NUMBER %s\n", yytext); currPos += yyleng;}
 
-[ \t]+         {/* Ignore spaces */ currPos += yyleng;}
-"\n"           {/* Handle newlines, currently is not recognizing newlines though. */ currLine++; currPos = 1;}
+({DIGIT}+{ALPHA_UNDER}{ALPHANUMERIC}*)|("_"{ALPHA_UNDER}]+) {/* Checking for valid identifiers */ printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currPos, currLine, yytext); exit(0);}
+{LETTER}({ALPHA_UNDER}*{ALPHANUMERIC}+)?"_"                 {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currPos, currLine, yytext); exit(0);}
+{ALPHA_UNDER}*{ALPHANUMERIC}*                               {/* Valid identifier */ printf("IDENT %s\n", yytext); currPos += yyleng;}
 
+[ \t]+         {/* Ignoring whitespace */ currPos += yyleng;}
+"\n"           {currLine++; currPos = 1;}
 .              {/* Error message for unrecognized symbol */ printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
-
 %%
 	
 int main(int argc, char ** argv)
