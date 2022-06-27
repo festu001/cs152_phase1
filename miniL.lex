@@ -11,6 +11,8 @@
     "END_LOCALS","BEGIN_BODY", "END_BODY", "INTEGER", "ARRAY", "ENUM", "OF", "IF", "THEN", "ENDIF",
     "ELSE", "FOR", "WHILE", "DO", "BEGINLOOP", "ENDLOOP", "CONTINUE", "READ", 
     "WRITE", "AND", "OR", "NOT", "TRUE", "FALSE", "RETURN"};
+
+    const int numReserved = sizeof(reservedWord) / sizeof(reservedWord[0]);
 %}
 
 DIGIT          [0-9]
@@ -44,6 +46,23 @@ ALPHA_UNDER    [0-9a-zA-Z_]
 ">="            {printf("GTE\n"); currPos += yyleng;}
 
 {DIGIT}+       {printf("NUMBER %s\n", yytext); currPos += yyleng;}
+
+{LETTER}({ALPHA_UNDER}*{ALPHANUMERIC}+)?    {
+   short reservedFound = 0;
+   int i;
+   for (i = 0; i < numReserved; i++)
+   {
+      if (strcmp(yytext, reservedWord[i]) == 0)
+      {
+         reservedFound = 1;
+         printf("%s\n", reservedWordMap[i]);
+      }
+   }
+   if (reservedFound == 0)
+      printf("%s\n", yytext);
+   currPos += yyleng;
+
+}
 
 ({DIGIT}+{ALPHA_UNDER}{ALPHANUMERIC}*)|("_"{ALPHA_UNDER}]+) {/* Checking for valid identifiers */ printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currPos, currLine, yytext); exit(0);}
 {LETTER}({ALPHA_UNDER}*{ALPHANUMERIC}+)?"_"                 {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currPos, currLine, yytext); exit(0);}
