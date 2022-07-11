@@ -1,0 +1,5 @@
+program -> functions
+
+functions -> function functions | epsilon
+
+function -> 
