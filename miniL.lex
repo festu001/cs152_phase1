@@ -75,20 +75,3 @@ ALPHA_UNDER    [0-9a-zA-Z_]
 [##].*         {currLine++; currPos = 1;}
 .              {/* Error message for unrecognized symbol */ printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 %%
-	
-int main(int argc, char ** argv)
-{
-   if (argc >= 2) 
-   {
-        yyin = fopen(argv[1], "r");
-        if(yyin == NULL)
-        {
-            yyin = stdin;
-        }
-   }
-   else 
-   {
-        yyin = stdin;
-   }
-   yylex();
-}
