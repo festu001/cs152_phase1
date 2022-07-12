@@ -39,6 +39,7 @@
 %token WHILE
 %token DO
 %token BEGINLOOP
+%token ENDLOOP
 %token CONTINUE
 %token READ
 %token WRITE
@@ -48,7 +49,7 @@
 
 %left AND
 %left OR
-$right NOT
+%right NOT
 
 %left ADD
 %left SUB
@@ -79,8 +80,8 @@ program:    functions {printf("program -> functions\n");}
 functions:  function functions {printf("functions -> function functions\n");}
    |        /*empty*/ {printf("functions -> epsilon\n");}
    ;
-function:   FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement END_BODY
-            {printf("function -> FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement END_BODY\n");}
+function:   FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement END_BODY
+            {printf("function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement END_BODY\n");}
    ;
 
 declarations:  declaration SEMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations \n");}
@@ -157,17 +158,17 @@ comp: EQ    {printf("comp -> EQ\n");}
   |   GTE   {printf("comp -> GTE\n");}
   ;
 
-expression: mult_div_mod_exp add_sub_exp {printf("expression -> mult_div_mod_exp add_sub_exp\n");}
+expression: mult_exp add_sub_exp {printf("expression -> mult_exp add_sub_exp\n");}
   ;
 
 expression_loop: /*empty*/ {printf("expression_loop -> epsilon\n");}
   |   COMMA expression expression_loop {printf("expression_loop -> COMMA expression expression_loop\n");}
   ;
 
-mult_div_mod_exp: term {printf("mult_div_mod_exp -> term\n");}
-  |   term MULT mult_exp {printf("mult_div_mod_exp -> term MULT mult_exp\n");}
-  |   term DIV mult_exp {printf("mult_div_mod_exp -> term DIV mult_exp\n");}
-  |   term MOD mult_exp {printf("mult_div_mod_exp -> term MOD mult_exp\n");}
+mult_exp: term {printf("mult_exp -> term\n");}
+  |   term MULT mult_exp {printf("mult_exp -> term MULT mult_exp\n");}
+  |   term DIV mult_exp {printf("mult_exp -> term DIV mult_exp\n");}
+  |   term MOD mult_exp {printf("mult_exp -> term MOD mult_exp\n");}
   ;
 
 add_sub_exp: /*empty*/  
@@ -184,11 +185,11 @@ term: var {printf("term -> var\n");}
   ;
 
 var:  identifier {printf("var -> identifier\n");}
-  |   identifier L_SQUARE_BRACKET expresssion R_SQUARE_BRACKET {printf(" \n");}
+  |   identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf(" \n");}
   ;
 
 var_loop: /*empty*/ {printf("var_loop -> epsilon\n");}  
-  |   COMMA var var_loop {printf("var_loop -> COMMA var var_loop);}
+  |   COMMA var var_loop {printf("var_loop -> COMMA var var_loop");}
   ;
 
 %% 
