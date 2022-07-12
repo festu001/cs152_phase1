@@ -14,7 +14,6 @@
 }
 
 %error-verbose
-%locations
 %start program
 
 %token <ident_val> IDENT
@@ -43,13 +42,16 @@
 %token CONTINUE
 %token READ
 %token WRITE
-%token TRUE
-%token FALSE
-%token RETURN
 
 %left AND
 %left OR
 %right NOT
+
+%token TRUE
+%token FALSE
+%token RETURN
+
+
 
 %left ADD
 %left SUB
@@ -64,13 +66,14 @@
 %left LTE
 %left GTE
 
-%token COLON
-%token SEMICOLON
-%token COMMA
+
 %token L_PAREN
 %token R_PAREN
 %token L_SQUARE_BRACKET
 %token R_SQUARE_BRACKET
+%token COMMA
+%token SEMICOLON
+%token COLON
 %left ASSIGN
 
 %% 
