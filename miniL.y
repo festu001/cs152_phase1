@@ -89,6 +89,7 @@ function:   FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS B
 
 declarations:  /*empty*/ {printf("declarations -> epsilon \n");}
    |           declaration SEMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations \n");}
+   |           identifiers COLON ENUM L_PAREN identifiers R_PAREN {printf("declarations -> identifiers COLON ENUM L_PAREN identifiers R_PAREN \n");}
    ;
 
 declaration:   identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER \n");}
@@ -102,10 +103,8 @@ identifiers:   identifier {printf("identifiers -> identifier \n");}
 identifier:    IDENT {printf("identifier -> IDENT \n");}
    ;
 
-
-
-statements:   statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements \n");}
-   |          statement SEMICOLON {printf("statements -> statement SEMICOLON \n");}
+statements:   /*empty*/ {printf("statements -> epsilon \n");}
+   |          statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements \n");}
    ;
 
 statement:    statement_var {printf("statement -> statement_var \n");}
@@ -122,15 +121,16 @@ statement_var: var ASSIGN expression {printf("statement_var -> var ASSIGN expres
    ;
 
 statement_if:  IF bool_exp THEN statements ENDIF {printf("statement_if -> IF bool_exp THEN statements ENDIF \n");}
-
+   |           IF bool_exp THEN statements ELSE statements ENDIF {printf("statement_if -> IF bool_exp THEN statements ELSE statements ENDIF \n");}
+   ;
 statement_while:  WHILE bool_exp BEGINLOOP statements ENDLOOP {printf("statement_while -> WHILE bool_exp BEGINLOOP statements ENDLOOP \n");}
-
-statement_do:  BEGINLOOP statements ENDLOOP WHILE bool_exp {printf("statement_do -> BEGINLOOP statements ENDLOOP WHILE bool_exp \n");}
-
-statement_read:   READ var var_loop {printf("statement_read -> READ var var_loop \n");}
-
-statement_write:  WRITE var var_loop {printf("statement_write -> WRITE var var_loop \n");}
-
+   ;
+statement_do:  DO BEGINLOOP statements ENDLOOP WHILE bool_exp {printf("statement_do -> DO BEGINLOOP statements ENDLOOP WHILE bool_exp \n");}
+   ;
+statement_read:   READ vars {printf("statement_read -> READ vars \n");}
+   ;
+statement_write:  WRITE vars {printf("statement_write -> WRITE vars \n");}
+   ;
 statement_continue: CONTINUE  {printf("statement_continue -> CONTINUE \n");}
   ;
 
@@ -138,21 +138,20 @@ statement_return:   RETURN expression {printf("statement_return -> RETURN expres
   ;
 
 bool_exp: relational_exps {printf("bool_exp -> relational_exps\n");}
-  | bool_exp OR relational_exps  {printf("bool_exp -> bool_exp OR relational_exps\n");}
+  | relational_exps OR bool_exp  {printf("bool_exp -> relational_exps OR bool_exp\n");}
   ;
 
 relational_exps: relational_exp     {printf("relational_exps -> relational_exp \n");}
-  |   relational_exps AND relational_exp    {printf("relational_exps -> relational_exps AND relational_exp\n");}
+  |   relational_exp AND relational_exps    {printf("relational_exps -> relational_exp AND relational_exps\n");}
   ;
 
-relational_exp: NOT equation {printf("relational_exp -> NOT equation\n");}
-  |   equation  {printf("relational_exp -> equation\n");}
-  |   TRUE      {printf("relational_exp -> TRUE\n");}
+relational_exp: expression comp expression {printf("relational_exp -> expression comp expression\n");}
+  |   NOT expression comp expression {printf("relational_exp -> NOT expression comp expression\n");}
+  |   TRUE {printf("relational_exp -> TRUE\n");}
+  |   NOT TRUE {printf("relational_exp -> NOT TRUE\n");}
   |   FALSE     {printf("relational_exp -> FALSE\n");}
+  |   NOT FALSE     {printf("relational_exp -> NOT FALSE\n");}
   |   L_PAREN bool_exp R_PAREN    {printf("relational_exp -> L_PAREN bool_exp R_PAREN\n");}
-  ;
-
-equation: expression comp expression {printf("equation -> expression comp expression\n");}
   ;
 
 comp: EQ    {printf("comp -> EQ\n");}
@@ -163,22 +162,19 @@ comp: EQ    {printf("comp -> EQ\n");}
   |   GTE   {printf("comp -> GTE\n");}
   ;
 
-expression: mult_exp add_sub_exp {printf("expression -> mult_exp add_sub_exp\n");}
+expression_loop: expression {printf("expression_loop -> expression\n");}
+  |    expression COMMA expression_loop {printf("expression_loop -> expression COMMA expression_loop\n");}
   ;
 
-expression_loop: /*empty*/ {printf("expression_loop -> epsilon\n");}
-  |   COMMA expression expression_loop {printf("expression_loop -> COMMA expression expression_loop\n");}
+expression: mult_exp {printf("expression -> mult_exp\n");}
+  |   mult_exp ADD expression {printf("expression -> mult_exp ADD expression\n");}
+  |   mult_exp SUB expression {printf("expression -> mult_exp SUB expression\n");}
   ;
 
 mult_exp: term {printf("mult_exp -> term\n");}
   |   term MULT mult_exp {printf("mult_exp -> term MULT mult_exp\n");}
   |   term DIV mult_exp {printf("mult_exp -> term DIV mult_exp\n");}
   |   term MOD mult_exp {printf("mult_exp -> term MOD mult_exp\n");}
-  ;
-
-add_sub_exp: /*empty*/  
-  |   ADD expression {printf("add_sub_exp -> ADD expression\n");}
-  |   SUB expression {printf("add_sub_exp -> SUB expression\n");}
   ;
 
 term: var {printf("term -> var\n");}
@@ -191,13 +187,15 @@ term: var {printf("term -> var\n");}
   |   identifier L_PAREN expression expression_loop R_PAREN {printf("term -> identifier L_PAREN expression expression_loop R_PAREN\n");}
   ;
 
-var:  identifier {printf("var -> identifier\n");}
-  |   identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf(" \n");}
+vars: var {printf("vars -> var\n");}  
+  |   COMMA var vars {printf("var_loop -> COMMA var vars");}
   ;
 
-var_loop: var {printf("var_loop -> var\n");}  
-  |   COMMA var var_loop {printf("var_loop -> COMMA var var_loop");}
+var:  identifier {printf("var -> identifier\n");}
+  |   identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf("var -> identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET \n");}
   ;
+
+
 
 %% 
 
