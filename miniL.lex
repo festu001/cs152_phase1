@@ -24,27 +24,27 @@ LETTER_UNDER   [a-zA-Z_]
 ALPHA_UNDER    [0-9a-zA-Z_]
 
 %%
-"-"            {return SUB; currPos += yyleng;} 
-"+"            {return ADD; currPos += yyleng;}
-"*"            {return MULT; currPos += yyleng;} 
-"/"            {return DIV; currPos += yyleng;}
-"%"            {return MOD; currPos += yyleng;}
+"-"            {currPos += yyleng; return SUB; } 
+"+"            {currPos += yyleng; return ADD; }
+"*"            {currPos += yyleng; return MULT; } 
+"/"            {currPos += yyleng; return DIV; }
+"%"            {currPos += yyleng; return MOD; }
 
-"="            {return ASSIGN; currPos += yyleng;}
-"("            {return L_PAREN; currPos += yyleng;}
-")"            {return R_PAREN; currPos += yyleng;}
-"["            {return L_SQUARE_BRACKET;; currPos += yyleng;}
-"]"            {return R_SQUARE_BRACKET;; currPos += yyleng;}
-","            {return COMMA; currPos += yyleng;}
-":"            {return COLON; currPos += yyleng;}
-";"            {return SEMICOLON; currPos += yyleng;}
+":="            {currPos += yyleng; return ASSIGN; }
+"("            {currPos += yyleng; return L_PAREN; }
+")"            {currPos += yyleng; return R_PAREN;}
+"["            {currPos += yyleng; return L_SQUARE_BRACKET; }
+"]"            {currPos += yyleng; return R_SQUARE_BRACKET; }
+","            {currPos += yyleng; return COMMA;}
+":"            {currPos += yyleng; return COLON;}
+";"            {currPos += yyleng; return SEMICOLON;}
 
-"=="            {return EQ; currPos += yyleng;}
-"<>"            {return NEQ; currPos += yyleng;}
-"<"             {return LT; currPos += yyleng;}
-">"             {return GT; currPos += yyleng;}
-"<="            {return LTE; currPos += yyleng;}
-">="            {return GTE; currPos += yyleng;}
+"=="            {currPos += yyleng; return EQ;}
+"<>"            {currPos += yyleng; return NEQ;}
+"<"             {currPos += yyleng; return LT;}
+">"             {currPos += yyleng; return GT;}
+"<="            {currPos += yyleng; return LTE;}
+">="            {currPos += yyleng; return GTE;}
 
 "function"     {currPos += yyleng; return FUNCTION;}
 "beginparams"  {currPos += yyleng; return BEGIN_PARAMS;}
@@ -75,14 +75,17 @@ ALPHA_UNDER    [0-9a-zA-Z_]
 "false"        {currPos += yyleng; return FALSE;}
 "return"       {currPos += yyleng; return RETURN;}
 
-{DIGIT}+      {yylval.num_val == atoi(yytext); return NUMBER; currPos += yyleng;}
+{DIGIT}+      {
+   yylval.num_val == atoi(yytext); 
+   return NUMBER; 
+   currPos += yyleng;
+   }
 
 {LETTER}({ALPHA_UNDER}*{ALPHANUMERIC}+)?    {
    
-   yylval.ident_val == yytext; 
+   yylval.ident_val = yytext; 
    return IDENT;
    currPos += yyleng;
-
 }
 
 
@@ -92,6 +95,7 @@ ALPHA_UNDER    [0-9a-zA-Z_]
 
 [ \t]+         {/* Ignoring whitespace */ currPos += yyleng;}
 "\n"           {currLine++; currPos = 1;}
+"\r"
 [##].*         {currLine++; currPos = 1;}
 .              {/* Error message for unrecognized symbol */ printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 %%
