@@ -1,5 +1,6 @@
    /* cs152-miniL phase1 */
 %{   
+   #include "miniL-parser.h"
    int currLine = 1, currPos = 1; 
 
    static const char* reservedWord[] = {"function", "beginparams", "endparams", "beginlocals", 
@@ -10,7 +11,7 @@
    static const char* reservedWordMap[] = {"FUNCTION", "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", 
     "END_LOCALS","BEGIN_BODY", "END_BODY", "INTEGER", "ARRAY", "ENUM", "OF", "IF", "THEN", "ENDIF",
     "ELSE", "FOR", "WHILE", "DO", "BEGINLOOP", "ENDLOOP", "CONTINUE", "READ", 
-    "WRITE", "AND", "OR", "NOT", "TRUE", "FALSE", "RETURN"};
+    "WRITE", "AND",  "OR", "NOT", "TRUE", "FALSE", "RETURN"};
 
     const int numReserved = sizeof(reservedWord) / sizeof(reservedWord[0]);
 %}
@@ -45,22 +46,12 @@ ALPHA_UNDER    [0-9a-zA-Z_]
 "<="            {printf("LTE\n"); currPos += yyleng;}
 ">="            {printf("GTE\n"); currPos += yyleng;}
 
-{DIGIT}+       {printf("NUMBER %s\n", yytext); currPos += yyleng;}
+{DIGIT}+      {yylval.num_val == atoi(yytext); return NUMBER; currPos += yyleng;}
 
 {LETTER}({ALPHA_UNDER}*{ALPHANUMERIC}+)?    {
-   short reservedFound = 0;
-   int i;
-   for (i = 0; i < numReserved; i++)
-   {
-      if (strcmp(yytext, reservedWord[i]) == 0)
-      {
-         reservedFound = 1;
-         printf("%s\n", reservedWordMap[i]);
-      }
-   }
-   if (reservedFound == 0)
-      printf("IDENT %s\n", yytext);
-
+   
+   yylval.ident_val == yytext; 
+   return IDENT;
    currPos += yyleng;
 
 }

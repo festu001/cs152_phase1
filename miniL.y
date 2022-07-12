@@ -195,23 +195,18 @@ var_loop: /*empty*/ {printf("var_loop -> epsilon\n");}
 %% 
 
 int main(int argc, char **argv) {
-   if (argc >= 2) 
+   if (argc >= 1) 
    {
         yyin = fopen(argv[1], "r");
         if(yyin == NULL)
         {
-            yyin = stdin;
+            printf("syntax: %s filename", argv[0]);
         }
-   }
-   else 
-   {
-        yyin = stdin;
    }
    yyparse();
    return 0;
 }
 
 void yyerror(const char *msg) {
-   printf("** Line %d, position %d: %s\n", currLine, currPos, msg);
-   exit(0);
+   printf("Error: Line %d, position %d: %s\n", currLine, currPos, msg);
 }
