@@ -80,15 +80,15 @@
 
 program:    functions {printf("program -> functions\n");}
    ;
-functions:  function functions {printf("functions -> function functions\n");}
-   |        /*empty*/ {printf("functions -> epsilon\n");}
+functions:  /*empty*/ {printf("functions -> epsilon\n");}
+   |        function functions {printf("functions -> function functions\n");}
    ;
-function:   FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement END_BODY
-            {printf("function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement END_BODY\n");}
+function:   FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY
+            {printf("function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");}
    ;
 
-declarations:  declaration SEMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations \n");}
-   |           /*empty*/ {printf("declarations -> epsilon \n");}
+declarations:  /*empty*/ {printf("declarations -> epsilon \n");}
+   |           declaration SEMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations \n");}
    ;
 
 declaration:   identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER \n");}
@@ -96,11 +96,13 @@ declaration:   identifiers COLON INTEGER {printf("declaration -> identifiers COL
                   {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER \n");}
    ;
 identifiers:   identifier {printf("identifiers -> identifier \n");}
-   |           IDENT COMMA identifiers {printf("identifiers -> IDENT COMMA identifiers \n");}
+   |           identifier COMMA identifiers {printf("identifiers -> IDENT COMMA identifiers \n");}
    ;
 
 identifier:    IDENT {printf("identifier -> IDENT \n");}
    ;
+
+
 
 statements:   statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements \n");}
    |          statement SEMICOLON {printf("statements -> statement SEMICOLON \n");}
@@ -184,6 +186,8 @@ term: var {printf("term -> var\n");}
   |   NUMBER  {printf("term -> NUMBER\n");}
   |   SUB NUMBER {printf("term -> SUB NUMBER\n");}
   |   L_PAREN expression R_PAREN {printf("term -> L_PAREN expression R_PAREN\n");}
+  |   SUB L_PAREN expression R_PAREN {printf("term -> SUB L_PAREN expression R_PAREN\n");}
+  |   identifier L_PAREN R_PAREN {printf("term -> identifier L_PAREN R_PAREN\n");}
   |   identifier L_PAREN expression expression_loop R_PAREN {printf("term -> identifier L_PAREN expression expression_loop R_PAREN\n");}
   ;
 
@@ -191,7 +195,7 @@ var:  identifier {printf("var -> identifier\n");}
   |   identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf(" \n");}
   ;
 
-var_loop: /*empty*/ {printf("var_loop -> epsilon\n");}  
+var_loop: var {printf("var_loop -> var\n");}  
   |   COMMA var var_loop {printf("var_loop -> COMMA var var_loop");}
   ;
 
