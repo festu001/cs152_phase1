@@ -9,13 +9,68 @@
 %}
 
 %union{
-  /* put your types here */
+  char* ident_val;
+  int num_val;
 }
 
 %error-verbose
 %locations
-
 %start program
+
+%token <ident_val> IDENT
+%token <num_val> NUMBER
+
+%token FUNCTION
+%token BEGIN_PARAMS
+%token END_PARAMS
+%token BEGIN_LOCALS
+%token END_LOCALS
+%token BEGIN_BODY
+%token END_BODY
+%token INTEGER
+%token ARRAY
+%token ENUM
+%token OF
+%token IF
+%token THEN
+%token ENDIF
+%token ELSE
+%token FOR
+%token WHILE
+%token DO
+%token BEGINLOOP
+%token CONTINUE
+%token READ
+%token WRITE
+%token TRUE
+%token FALSE
+%token RETURN
+
+%left AND
+%left OR
+$right NOT
+
+%left ADD
+%left SUB
+%left MULT
+%left DIV
+%left MOD
+
+%left EQ
+%left NEQ
+%left LT
+%left GT
+%left LTE
+%left GTE
+
+%token COLON
+%token SEMICOLON
+%token COMMA
+%token L_PAREN
+%token R_PAREN
+%token L_SQUARE_BRACKET
+%token R_SQUARE_BRACKET
+%left ASSIGN
 
 %% 
 
@@ -37,6 +92,7 @@ int main(int argc, char **argv) {
         yyin = stdin;
    }
    yyparse();
+   return 0;
 }
 
 void yyerror(const char *msg) {
