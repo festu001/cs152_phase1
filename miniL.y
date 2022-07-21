@@ -32,7 +32,7 @@
  std::string new_label();
  extern int currLine;
  extern int currPos;
- FILE * yyin;
+ extern FILE * yyin;
 %}
 
 %union{
