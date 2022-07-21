@@ -11,11 +11,11 @@
  int tempCount = 0;
  int labelCount = 0;
  extern char* yytext;
- std::map<std::string, std::string> varTemp;
- std::map<std::string, std::int> arrSize;
+ std::map<string, string> varTemp;
+ std::map<string, int> arrSize;
  bool mainFunc = false;
- std::map<std::string> funcs;
- std::map<std::string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION", ,"SEMICOLON",
+ std::map<string> funcs;
+ std::map<string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION", ,"SEMICOLON",
     "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", "END_LOCALS","BEGIN_BODY", "END_BODY", "COLON", 
     "INTEGER", "ARRAY", "ENUM", "OF", "IF", "THEN", "ENDIF", "COMMA", "L_SQUARE_BRACKET", 
     "R_SQUARE_BRACKET", "L_PAREN", "R_PAREN", "CONTINUE", "READ", "WRITE", "DO", 
@@ -184,7 +184,7 @@ statements:   /*empty*/ {
       $$.code = strdup(""); 
    }
    |          statement SEMICOLON statements {
-      std::string tmep;
+      std::string temp;
       temp.append($1.code);
       temp.append($3.code);
       $$.code = strdup(temp.c_str());
@@ -312,7 +312,7 @@ term: var {
         temp.append($1.code);
       }
 
-      if (varTemp.find(#1.place) != varTemp.end()) {
+      if (varTemp.find($1.place) != varTemp.end()) {
         varTemp[$1.place] = dst;
       }
       $$.code = strdup(temp.c_str());
@@ -343,7 +343,7 @@ term: var {
       temp.append($$.place);
       temp.append(", -1\n");
 
-      if (varTemp.find(#2.place) != varTemp.end()) {
+      if (varTemp.find($2.place) != varTemp.end()) {
         varTemp[$2.place] = dst;
       }
       $$.code = strdup(temp.c_str());
@@ -473,7 +473,7 @@ void yyerror(const char *msg) {
 }
 
 std::string new_temp(){
-  std::strnig t = "t" + std::to_string(tempCount);
+  std::string t = "t" + std::to_string(tempCount);
   tempCount++;
   return t;
 }
