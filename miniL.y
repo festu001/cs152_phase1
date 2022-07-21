@@ -1,5 +1,6 @@
     /* cs152-miniL phase2 */
 %{
+  #define YY_NO_UNPUT
  #include <stdio.h>
  #include <stdlib.h>
 
@@ -42,16 +43,18 @@
   } statement;
   struct E {
     char* place;
-    char*code;
+    char* code;
     bool arr;
   } expression;
 }
 
-%error-verbose
 %start program
 
 %token <ident_val> IDENT
 %token <num_val> NUMBER
+%type <expression> program function functions declarations declaration bool_exp relational_exp relational_exps 
+%type <expression> comp vars var identifiers identifier expression_loop expression mult_exp term
+%type <statement> statements statement
 
 %token FUNCTION
 %token BEGIN_PARAMS
@@ -106,7 +109,7 @@ functions:  /*empty*/ {printf("functions -> epsilon\n");}
    |        function functions {printf("functions -> function functions\n");}
    ;
 function:   FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY{
-      std:: string temp = "func ";
+      std::string temp = "func ";
       temp.append($2.place);
       temp.append("\n");
       std::string s = $2.place;
