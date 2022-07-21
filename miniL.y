@@ -11,11 +11,11 @@
  int tempCount = 0;
  int labelCount = 0;
  extern char* yytext;
- std::map<string, string> varTemp;
- std::map<string, int> arrSize;
+ std::map<std::string, std::string> varTemp;
+ std::map<std::string, int> arrSize;
  bool mainFunc = false;
- std::map<string> funcs;
- std::map<string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION", ,"SEMICOLON",
+ std::set<std::string> funcs;
+ std::set<std::string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION","SEMICOLON",
     "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", "END_LOCALS","BEGIN_BODY", "END_BODY", "COLON", 
     "INTEGER", "ARRAY", "ENUM", "OF", "IF", "THEN", "ENDIF", "COMMA", "L_SQUARE_BRACKET", 
     "R_SQUARE_BRACKET", "L_PAREN", "R_PAREN", "CONTINUE", "READ", "WRITE", "DO", 
@@ -29,7 +29,7 @@
  void yyerror(const char *msg);
  int yylex();
  std::string new_temp();
- std::string new_label)_;
+ std::string new_label();
  extern int currLine;
  extern int currPos;
  FILE * yyin;
@@ -114,7 +114,7 @@ function:   FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS B
       temp.append("\n");
       std::string s = $2.place;
       if (s == "main") {
-        mainFun = true;
+        mainFunc = true;
       }
       temp.append($5.code);
       std::string decs = $5.code;
@@ -180,8 +180,7 @@ identifier:    IDENT {
    ;
 
 statements:   /*empty*/ {
-      $$.place = strdup("");
-      $$.code = strdup(""); 
+
    }
    |          statement SEMICOLON statements {
       std::string temp;
@@ -202,7 +201,7 @@ statement:    var ASSIGN expression {printf("statement -> var ASSIGN expression\
       std::string temp;
       temp.append($2.code);
       size_t pos = temp.find("|", 0);
-      while (pos != std::stirng::npos){
+      while (pos != std::string::npos){
         temp.replace(pos,1, "<");
         pos = temp.find("|", pos);
       }
@@ -212,7 +211,7 @@ statement:    var ASSIGN expression {printf("statement -> var ASSIGN expression\
       std::string temp;
       temp.append($2.code);
       size_t pos = temp.find("|", 0);
-      while (pos != std::stirng::npos){
+      while (pos != std::string::npos){
         temp.replace(pos,1, ">");
         pos = temp.find("|", pos);
       }
@@ -238,7 +237,7 @@ bool_exp: relational_exps {
     $$.place = strdup($1.place);
   }
   | relational_exps OR bool_exp  {
-    strd::string temp;
+    std::string temp;
     std::string dst = new_temp();
     temp.append($1.code);
     temp.append($3.code);
@@ -291,7 +290,7 @@ mult_exp: term {printf("mult_exp -> term\n");}
 
 term: var {
 
-      std::string dst = new_temp;
+      std::string dst = new_temp();
       std::string temp;
 
       if($1.arr) {
@@ -321,7 +320,7 @@ term: var {
     }
   |   SUB var {
     
-      std::string dst = new_temp;
+      std::string dst = new_temp();
       std::string temp;
       temp.append($2.code);
       temp.append(". ");
@@ -348,18 +347,18 @@ term: var {
       }
       $$.code = strdup(temp.c_str());
       $$.place = strdup(dst.c_str());
-      $$.array = false;
+      $$.arr = false;
     
     }
   |   NUMBER  {
 
-      std::string dst = new_temp;
+      std::string dst = new_temp();
       std::string temp;
       temp.append(". ");
       temp.append(dst);
       temp.append("\n");
  
-      temp = temp + "= " + dst + ", " + std:to_string($1) + "\n";
+      temp = temp + "= " + dst + ", " + std::to_string($1) + "\n";
       $$.code = strdup(temp.c_str());
       $$.place = strdup(dst.c_str());
 
@@ -384,7 +383,7 @@ term: var {
         std::string func = $1.place;
         std::string temp;
         if (funcs.find(func) == funcs.end()){
-          printf("Calling undeclared function $s.\n", func,c_str());
+          printf("Calling undeclared function $s.\n", func.c_str());
         }
         std::string dst = new_temp();
         temp.append($3.code);
