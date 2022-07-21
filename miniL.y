@@ -216,7 +216,7 @@ statement:    var ASSIGN expression {printf("statement -> var ASSIGN expression\
       $$.code = strdup(temp.c_str());
     }
    |          CONTINUE  {
-      $$.code = strdup(continue\n");
+      $$.code = strdup("continue\n");
     }
 
    |          RETURN expression {
@@ -224,7 +224,7 @@ statement:    var ASSIGN expression {printf("statement -> var ASSIGN expression\
       temp.append($2.code);
       temp.append("ret ");
       temp.append($2.place);
-      temp.append("\n);
+      temp.append("\n");
       $$.code = strdup(temp.c_str());
     }
    ;
@@ -240,7 +240,7 @@ bool_exp: relational_exps {
     temp.append($1.code);
     temp.append($3.code);
     temp += ". " + dst + "\n";
-    temp += "|| + dst + ", ";
+    temp += "|| " + dst + ", ";
     temp.append($1.place);
     temp.append(", ");
     temp.append($3.place);
@@ -354,7 +354,7 @@ term: var {
       std::string temp;
       temp.append(". ");
       temp.append(dst);
-      temp.append("\n"");
+      temp.append("\n");
  
       temp = temp + "= " + dst + ", " + std:to_string($1) + "\n";
       $$.code = strdup(temp.c_str());
@@ -385,7 +385,7 @@ term: var {
         }
         std::string dst = new_temp();
         temp.append($3.code);
-        temp += ". " + dst + \ncall ";
+        temp += ". " + dst + "\ncall ";
         temp.append($1.place);
         temp += ", " + dst + "\n";
 
