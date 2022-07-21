@@ -3,6 +3,7 @@
   #define YY_NO_UNPUT
  #include <stdio.h>
  #include <stdlib.h>
+ #include <string>
 
  #include <map>
  #include <string.h>
@@ -45,15 +46,15 @@
     char* place;
     char* code;
     bool arr;
-  } expression;
+  } expr;
 }
 
 %start program
 
 %token <ident_val> IDENT
 %token <num_val> NUMBER
-%type <expression> program function functions declarations declaration bool_exp relational_exp relational_exps 
-%type <expression> comp vars var identifiers identifier expression_loop expression mult_exp term
+%type <expr> program function functions declarations declaration bool_exp relational_exp relational_exps 
+%type <expr> comp vars var identifiers identifier expression_loop expression mult_exp term
 %type <statement> statements statement
 
 %token FUNCTION
@@ -103,10 +104,16 @@
 
 %% 
 
-program:    functions {printf("program -> functions\n");}
+program:    functions {
+
+   }
    ;
-functions:  /*empty*/ {printf("functions -> epsilon\n");}
-   |        function functions {printf("functions -> function functions\n");}
+functions:  /*empty*/ {
+  
+   }
+   |        function functions {
+
+   }
    ;
 function:   FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY{
       std::string temp = "func ";
@@ -154,9 +161,51 @@ declarations:  /*empty*/ {
    |           identifiers COLON ENUM L_PAREN identifiers R_PAREN {printf("declarations -> identifiers COLON ENUM L_PAREN identifiers R_PAREN\n");}
    ;
 
-declaration:   identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
-   |           identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
-                  {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n");}
+declaration:   identifiers COLON INTEGER {
+      std::string temp;
+      temp.append($1.code);
+      std::string variable = $1.place;
+      std::string work;
+
+      size_t pos = temp.find("|", 0);
+      while (pos != std::string::npos){
+        temp.append(". ");
+        work = variable.substr(0, pos);
+        temp.append(work);
+        temp.append("\n");
+        pos = temp.find("|", 0);
+      }
+      $$.code = strdup(temp.c_str());
+      $$.place = strdup("");
+
+}
+   |           identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
+
+      std::string temp;
+      temp.append($1.code);
+      std::string variable = $1.place;
+      std::string work;
+      if($5 <= 0)
+      {
+        printf("ERROR: Declaring array of size 0 or less.\n");
+      }
+
+      size_t pos = temp.find("|", 0);
+      while (pos != std::string::npos){
+        temp.append(".[] ");
+        work = variable.substr(0, pos);
+        temp.append(work);
+        temp.append(", ");
+        temp.append(std::to_string($5));
+        temp.append("\n");
+        pos = temp.find("|", 0);
+      }
+      $$.code = strdup(temp.c_str());
+      $$.place = strdup("");
+
+
+                    
+   }
    |           identifier INTEGER  {printf("error, invalid syntax\n");}
    ;
 identifiers:   identifier {
@@ -467,8 +516,12 @@ var:  identifier {
 
 %% 
 
+
 void yyerror(const char *msg) {
-   printf("Error: Line %d, position %d: %s\n", currLine, currPos, msg);
+  extern int yylineno;
+  extern char *yytext;
+  printf("%s on line %d at char %d at symbol \"%s\"\n", msg, yylineno, currPos, yytext);
+  exit(1);
 }
 
 std::string new_temp(){
