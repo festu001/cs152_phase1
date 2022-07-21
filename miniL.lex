@@ -1,7 +1,6 @@
    /* cs152-miniL phase1 */
 %{   
-   #include "miniL-parser.h"
-   #include "miniL-parser.hpp"
+   #include "miniL.tab.h"
    int currLine = 1, currPos = 1; 
 
    static const char* reservedWord[] = {"function", "beginparams", "endparams", "beginlocals", 

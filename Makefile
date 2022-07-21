@@ -1,17 +1,19 @@
-CC = gcc
-CFLAGS = -g -O0 -std=c99
+CFLAGS = -g -Wall -ansi -pedantic
 
-miniL: miniL-lex.o miniL-parser.o
-	$(CC) $^ -o $@ -lfl
+miniL: miniL.lex miniL.y
+	bison -d -v miniL.y
+	flex miniL.lex
+	g++ $(CFLAGS) -std=c++11 lex.yy.c miniL.tab.c -lfl -o miniL
+	rm -f lex.yy.c *.output *.tab.c *.tab.h
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
 
-miniL-lex.c: miniL.lex miniL-parser.c
-	flex -o $@ $< 
+test: miniL
+	cat ./phase1/mytest.min | ./miniL > ./phase1/mytest.mil
 
-miniL-parser.c: miniL.y
-	bison -d -v -g -o $@ $<
+test2:
+	echo 5 > input.txt
+	mil_run fibonacci,mil < input.txt
 
 clean:
-	rm -f *.o miniL-lex.c miniL-parser.c miniL-parser.h *.output *.dot miniL
+	rm -f lex.yy.c y.tab.* y.output *.o parser
+	rm -f *.o miniL-lex.c miniL-parser.c miniL-parser.h *.output *.dot miniL *.tab.h *.tab.c
