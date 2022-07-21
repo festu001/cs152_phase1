@@ -100,6 +100,7 @@ ALPHA_UNDER    [0-9a-zA-Z_]
 .              {/* Error message for unrecognized symbol */ printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 %%
 
+int yyparse();
 int main(int argc, char **argv) {
    if (argc >= 1) 
    {
